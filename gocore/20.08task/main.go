@@ -107,28 +107,33 @@ func main() {
 			break
 		}
 
-		if ans == 2 {
-			var iddel int
-			var passwordToFind int
-			fmt.Println("Введите id счета, который хотите закрыть: ")
-			fmt.Scan(&iddel)
-			account, err := showAccountBalance(accounts, iddel)
-			if err != nil {
-				fmt.Println("Ошибка: ", err)
-			} else {
-				fmt.Println("Введите пароль от счета, который хотите закрыть")
-				fmt.Scan(&passwordToFind)
-				if account.Password != passwordToFind {
-					fmt.Println("Ошибка, неверный пароль")
+		for {
+			if ans == 2 {
+				var iddel int
+				var passwordToFind int
+				fmt.Println("Введите id счета, который хотите закрыть: ")
+				fmt.Scan(&iddel)
+				account, err := showAccountBalance(accounts, iddel)
+				if err != nil {
+					fmt.Println("Ошибка: ", err)
+					break
 				} else {
-					accounts, err = deleteAccount(accounts, iddel)
-					if err != nil {
-						fmt.Println("Ошибка: ", err)
+					fmt.Println("Введите пароль от счета, который хотите закрыть")
+					fmt.Scan(&passwordToFind)
+					if account.Password != passwordToFind {
+						fmt.Println("Ошибка, неверный пароль")
 					} else {
-						fmt.Printf("Счет с id %v успешно закрыт\n", iddel)
+						accounts, err = deleteAccount(accounts, iddel)
+						if err != nil {
+							fmt.Println("Ошибка: ", err)
+							break
+						} else {
+							fmt.Printf("Счет с id %v успешно закрыт\n", iddel)
+						}
 					}
 				}
 			}
+			break
 		}
 
 		if ans == 3 {
