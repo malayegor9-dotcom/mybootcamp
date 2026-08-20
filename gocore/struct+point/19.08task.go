@@ -16,23 +16,30 @@ func addProduct(products []Product, product Product) []Product {
 	return append(products, product)
 }
 
-func deleteProduct(products []Product, id int) []Product {
+func deleteProduct(products []Product, id int) ([]Product, error) {
 	result := []Product{}
+	founditem := false
 	for _, p := range products {
 		if id != p.ID {
 			result = append(result, p)
+		} else {
+			founditem = true
 		}
 	}
-	return result
+	if founditem {
+		return result, nil
+	} else {
+		return nil, errors.New("товар не найден")
+	}
 }
 
-func findProduct(products []Product, id int) ([]Product, error) {
+func findProduct(products []Product, id int) (Product, error) {
 	for _, p := range products {
 		if id == p.ID {
-			return []Product{p}, nil
+			return p, nil
 		}
 	}
-	return nil, errors.New("товар не найден")
+	return Product{}, errors.New("товар не найден")
 }
 
 func changeProduct(products []Product, quantity int, name string) error {
@@ -45,10 +52,10 @@ func changeProduct(products []Product, quantity int, name string) error {
 	return errors.New("товар не найден")
 }
 
-func calcAllProduct(products []Product) int {
-	var result int
+func calcAllProduct(products []Product) float64 {
+	var result float64
 	for _, p := range products {
-		result += int(p.Price) * int(p.Quantity)
+		result += float64(p.Price) * float64(p.Quantity)
 	}
 	return result
 }
@@ -57,7 +64,7 @@ func printAllProduct(products []Product) []Product {
 	return products
 }
 
-func findMostExpenciveProduct(products []Product) (string, int) {
+func findMostExpenciveProduct(products []Product) (string, float64) {
 	result := products[0].Price
 	var strres string
 	for i := 1; i < len(products); i++ {
@@ -66,7 +73,11 @@ func findMostExpenciveProduct(products []Product) (string, int) {
 			strres = products[i].Name
 		}
 	}
-	return strres, int(result)
+	return strres, float64(result)
+}
+
+func allProduct(products []Product) []Product {
+	return products
 }
 
 func main() {
@@ -81,6 +92,7 @@ func main() {
 		fmt.Println("| 5. Показать стоимость всех товаров  |")
 		fmt.Println("| 6. Вывести все товары               |")
 		fmt.Println("| 7. Самый дорогой товар              |")
+		fmt.Println("| 8. Список всех товаров              |")
 		fmt.Println("| 0. Выход                            |")
 
 		var userans int
@@ -108,20 +120,26 @@ func main() {
 
 		if userans == 2 {
 			var idToDelete int
+			var err error
 			fmt.Println("Введите ID товара, который хотите удалить: ")
 			fmt.Scan(&idToDelete)
-			products = deleteProduct(products, idToDelete)
-			fmt.Println("Товар удален")
+			products, err = deleteProduct(products, idToDelete)
+			if err != nil {
+				fmt.Println("Ошибка: ", err)
+			} else {
+				fmt.Println("Товар удален", products)
+			}
+
 		}
 		if userans == 3 {
 			var idToFind int
 			fmt.Println("Введите ID товара, который хотите найти: ")
 			fmt.Scan(&idToFind)
-			products, err := findProduct(products, idToFind)
+			product, err := findProduct(products, idToFind)
 			if err != nil {
 				fmt.Println("Ошибка: ", err)
 			} else {
-				fmt.Println(products)
+				fmt.Println(product)
 			}
 		}
 		if userans == 4 {
@@ -136,7 +154,7 @@ func main() {
 				fmt.Println("Ошибка: ", err)
 			} else {
 				fmt.Println("Количество товара изменено")
-				fmt.Printf("Текущее количество товара: %v", newQ)
+				fmt.Printf("Текущее количество товара: %v\n", newQ)
 			}
 		}
 		if userans == 5 {
@@ -147,7 +165,10 @@ func main() {
 		}
 		if userans == 7 {
 			name, price := findMostExpenciveProduct(products)
-			fmt.Printf("Самый дорогой товар %s, его цена %v\n", name, price)
+			fmt.Printf("Самый дорогой товар %s, его цена %g\n", name, price)
+		}
+		if userans == 8 {
+			fmt.Printf("Список всех товаров: %v\n", allProduct(products))
 		}
 		if userans == 0 {
 			fmt.Println("Вы вышли из программы")
