@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bootcamp/gocore/10.09task/functions"
-	"bootcamp/gocore/10.09task/methods"
+	"10.09task/functions"
+	"10.09task/methods"
 	"fmt"
 )
 
